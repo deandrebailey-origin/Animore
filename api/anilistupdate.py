@@ -1,9 +1,12 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 import requests
 import time
 from pymongo import MongoClient
 
 # 🔹 Your MongoDB Atlas connection
-uri ="mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/"
+uri =os.environ["MONGODB_URI"]
 client = MongoClient(uri)
 
 # Database and collection

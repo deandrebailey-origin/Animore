@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 # PCA -> UMAP Visualization
 # -------------------------
 # PCA is a linear dimensionality reduction technique that projects data onto orthogonal axes of maximum variance.
@@ -15,7 +18,7 @@ import umap
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-client = MongoClient("mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/")
+client = MongoClient(os.environ["MONGODB_URI"])
 db = client.get_database("anime")
 collection = db["anime_anilist"]   # collection containing embeddings
 

@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 import numpy as np
 import pandas as pd
 import sklearn
@@ -7,7 +10,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-uri = "mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/"
+uri = os.environ["MONGODB_URI"]
 client = MongoClient(uri)
 db = client.get_database('anime')
 

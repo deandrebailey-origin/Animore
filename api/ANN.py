@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 # Fast and scalable ANN library for Python using FAISS instead of HNSWLib
 # Why: MongoDB stores embeddings as lists, but numpy arrays are faster for calculations
 # What numpy arrays are: n-dimensional arrays, efficient for numerical computations
@@ -17,7 +20,7 @@ import random
 # -------------------------
 # MongoDB setup
 # -------------------------
-uri = "mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/"
+uri = os.environ["MONGODB_URI"]
 client = MongoClient(uri)
 db = client.get_database("anime")
 collection = db["anime_anilist"]   # collection containing embeddings

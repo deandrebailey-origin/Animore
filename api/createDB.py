@@ -1,9 +1,12 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 import requests
 import time
 from pymongo import MongoClient
 
 # MongoDB connection
-uri = "mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/"
+uri = os.environ["MONGODB_URI"]
 client = MongoClient(uri)
 db = client["anime"]
 collection = db["anime_anilist"]

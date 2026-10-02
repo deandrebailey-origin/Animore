@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 # --- Configuration ---
 load_dotenv()
-MONGODB_URI = "mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/"
+MONGODB_URI = os.environ["MONGODB_URI"]
 DB_NAME = "anime"
 COLLECTION_NAME = "anime_anilist"
 ANILIST_API_URL = "https://graphql.anilist.co"

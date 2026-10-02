@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 # embed_anilist.py
 from sentence_transformers import SentenceTransformer
 from pymongo import MongoClient
@@ -5,7 +8,7 @@ import re
 import time
 import numpy as np
 
-uri = "mongodb+srv://test:test1234@anime.umwgmbd.mongodb.net/"
+uri = os.environ["MONGODB_URI"]
 client = MongoClient(uri)
 db = client.get_database("anime")
 collection = db["anime_anilist"]   # use your new AniList-based collection
