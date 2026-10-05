@@ -6,3 +6,4 @@ node_modules/git
 node_modules
 git a
 .env.local
+*.csv

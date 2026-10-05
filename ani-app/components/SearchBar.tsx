@@ -119,7 +119,7 @@ export default function SearchBar() {
       {/* No results found */}
       {results.length === 0 && query && !isLoading && (
         <div className="mt-4 p-4 rounded-lg">
-          <p className="text-black">No results found for "{query}"</p>
+          <p className="text-black">No results found for &ldquo;{query}&rdquo;</p>
         </div>
       )}
     </div>

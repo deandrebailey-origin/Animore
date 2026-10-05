@@ -52,23 +52,42 @@ def semantic_candidates(anime, k=50):
     return [i for i in ids if i is not None and i != anime.get("mal_id")][:k]
 
 
+def reciprocal_rank_fusion(*ranked_lists, k=60, limit=50):
+    """Merge ranked lists: each item scores sum(1 / (k + rank)) across lists.
+
+    Items ranked highly by either method rise to the top, and items that
+    appear in both lists get a boost. k=60 is the standard default.
+    """
+    scores = {}
+    for ranked in ranked_lists:
+        for rank, item in enumerate(ranked, start=1):
+            scores[item] = scores.get(item, 0.0) + 1.0 / (k + rank)
+    return [item for item, _ in sorted(scores.items(), key=lambda x: x[1], reverse=True)][:limit]
+
+
 @app.route("/candidates", methods=["GET"])
 def candidates():
     title = request.args.get("title", "").strip()
+    mode = request.args.get("mode", "hybrid")  # hybrid | collaborative | semantic
     if not title:
         return jsonify({"error": "title required"}), 400
+    if mode not in ("hybrid", "collaborative", "semantic"):
+        return jsonify({"error": "mode must be hybrid, collaborative, or semantic"}), 400
 
     anime = find_anime_by_title(title)
     if anime is None:
         return jsonify({"error": f"Anime '{title}' not found"}), 404
 
-    # Prefer collaborative filtering; fall back to semantic search when a title
-    # has no precomputed neighbors (the cold-start problem).
-    candidate_ids = anime.get("collab_candidates") or []
-    method = "collaborative"
-    if not candidate_ids:
-        candidate_ids = semantic_candidates(anime)
-        method = "semantic"
+    collab = anime.get("collab_candidates") or []
+    semantic = semantic_candidates(anime) if mode != "collaborative" else []
+
+    if mode == "collaborative":
+        candidate_ids, method = collab, "collaborative"
+    elif mode == "semantic" or not collab:
+        # No ratings data for this title (cold start): semantic only.
+        candidate_ids, method = semantic, "semantic"
+    else:
+        candidate_ids, method = reciprocal_rank_fusion(collab, semantic), "hybrid"
 
     return jsonify({
         "source_id": anime.get("mal_id"),

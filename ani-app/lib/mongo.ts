@@ -3,22 +3,26 @@ import { MongoClient } from "mongodb";
 const uri = process.env.MONGODB_URI;
 const options = {};
 
-let client;
-let clientPromise: Promise<MongoClient>;
-
 if (!uri) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
+// Tell TypeScript that globalThis may hold a cached connection promise
+const globalForMongo = globalThis as typeof globalThis & {
+  _mongoClientPromise?: Promise<MongoClient>;
+};
+
+let clientPromise: Promise<MongoClient>;
+
 if (process.env.NODE_ENV === "development") {
-  if (!(global as any)._mongoClientPromise) {
-    client = new MongoClient(uri!, options);
-    (global as any)._mongoClientPromise = client.connect();
+  // Reuse one connection across hot reloads in development
+  if (!globalForMongo._mongoClientPromise) {
+    globalForMongo._mongoClientPromise = new MongoClient(uri, options).connect();
   }
-    clientPromise = (global as any)._mongoClientPromise;
+  clientPromise = globalForMongo._mongoClientPromise;
 } else {
-  client = new MongoClient(uri!, options);
-  clientPromise = client.connect();
+  // In production, the code isn't reloaded, so connect once normally
+  clientPromise = new MongoClient(uri, options).connect();
 }
 
 export default clientPromise;

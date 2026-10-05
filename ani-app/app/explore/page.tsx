@@ -50,7 +50,9 @@ export default function ExplorePage() {
 
 
     try {
-      const flaskResponse = await fetch(`http://localhost:5000/candidates?title=${encodeURIComponent(searchTerm)}`);
+      // const flaskResponse = await fetch(`http://localhost:5000/candidates?title=${encodeURIComponent(searchTerm)}`);
+      const apiUrl = process.env.NEXT_PUBLIC_FLASK_API_URL || 'http://localhost:5000';
+      const flaskResponse = await fetch(`${apiUrl}/candidates?title=${encodeURIComponent(searchTerm)}`);
 
       if (!flaskResponse.ok) throw new Error('Could not find that anime.');
 
