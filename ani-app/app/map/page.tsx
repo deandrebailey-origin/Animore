@@ -151,11 +151,11 @@ export default function AnimeMapPage() {
             .style("transition", "all 0.2s ease")
             .on("mouseover", (event, d) => {
                 const currentRadius = radiusScale(d.popularity);
-                d3.select(event.currentTarget).attr("fill", "#FFC107").attr("r", currentRadius + 3).attr("opacity", 1);
+                d3.select(event.currentTarget as SVGCircleElement).attr("fill", "#FFC107").attr("r", currentRadius + 3).attr("opacity", 1);
                 setTooltip({ visible: true, content: d, x: event.pageX, y: event.pageY });
             })
             .on("mouseout", (event, d) => {
-                d3.select(event.currentTarget).attr("fill", "white").attr("r", radiusScale(d.popularity));
+                d3.select(event.currentTarget as SVGCircleElement).attr("fill", "white").attr("r", radiusScale(d.popularity));
                 setTooltip({ visible: false, content: null, x: 0, y: 0 });
             });
 
