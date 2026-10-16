@@ -2,8 +2,7 @@
 .env
 venv/
 __pycache__/
-node_modules/git 
 node_modules
-git a
 .env.local
 *.csv
+.DS_Store
