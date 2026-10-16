@@ -1,12 +1,10 @@
 "use client"; // 👈 Required if you're in Next.js App Router
 
-import Image from "next/image";
-import { useRouter } from "next/navigation"; // 👈 Next.js router hook
-import Search from "../../public/search.svg";
+import Link from "next/link"
+
 import "./globals.css";
 
 export default function Home() {
-  const router = useRouter();
 
   return (
     <div className="font-sans flex items-center min-h-screen justify-center p-8 pb-20 gap-16 sm:p-20">
@@ -23,33 +21,21 @@ export default function Home() {
         </div>
 
         <div className="flex gap-4">
-          <button
-            onClick={() => router.push("/explore")} // navigate to explore page
-            className="outline-2 px-24 py-3 bg-black text-white hover:bg-amber-300 hover:text-black transition font-bold"
+
+          <Link
+          href="/explore"
+          className="outline-2 px-6 py-3 bg-black text-white hover:bg-white hover:text-black transition font-bold"
           >
             EXPLORE
-          </button>
+          </Link>
+          
 
-          <button
-            onClick={() => router.push("/signup")} // navigate to signup page
-            className="outline-2 px-6 py-3 bg-black text-white hover:bg-white hover:text-black transition font-bold"
-          >
-            SIGNUP
-          </button>
-
-          <button
-            onClick={() => router.push("/login")}
-            className="outline-2 px-6 py-3 bg-black text-white hover:bg-white hover:text-black transition font-bold"
-          >
-            LOGIN
-          </button>
-
-          <button
-            onClick={() => router.push("/map")} // navigate to map page
+          <Link
+            href="/map"
             className="outline-2 px-6 py-3 bg-black text-white hover:bg-white hover:text-black transition font-bold"
           >
             MAP
-          </button>
+          </Link>
 
           
         </div>
