@@ -17,7 +17,26 @@ from pymongo import MongoClient
 
 load_dotenv()
 
-collection = MongoClient(os.environ["MONGODB_URI"]).get_database("anime").anime_anilist
+# collection = MongoClient(os.environ["MONGODB_URI"]).get_database("anime").anime_anilist
+
+# crashes immediatley if the variable isnt set
+# and because Test and CI dont have my db passwerd and shouldnt
+
+_collection = None
+
+#internal dont touch from outside
+
+def get_collection():
+    """Connect to MongoDB on first use, not at import time"""
+    global _collection
+    if _collection is None:
+
+        # global lets the function update modle level veraible
+        # instead of creating. local one
+
+        uri = os.environ["MONGODB_URI"]
+        _collection = MongoClient(uri).get_database("anime").anime_anilist
+    return _collection 
 
 app = Flask(__name__)
 CORS(app)
@@ -26,7 +45,7 @@ CORS(app)
 def find_anime_by_title(title):
     """Exact, case-insensitive match on the English or romaji title."""
     pattern = re.compile(f"^{re.escape(title)}$", re.IGNORECASE)
-    return collection.find_one(
+    return get_collection().find_one(
         {"$or": [{"title.english": pattern}, {"title.romaji": pattern}]},
         {"_id": 0, "mal_id": 1, "collab_candidates": 1, "embedding": 1},
     )
@@ -48,7 +67,7 @@ def semantic_candidates(anime, k=50):
         },
         {"$project": {"_id": 0, "mal_id": 1}},
     ]
-    ids = [doc.get("mal_id") for doc in collection.aggregate(pipeline)]
+    ids = [doc.get("mal_id") for doc in get_collection().aggregate(pipeline)]
     return [i for i in ids if i is not None and i != anime.get("mal_id")][:k]
 
 
@@ -102,4 +121,5 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=os.environ.get("FLASK_DEBUG") == "1")
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), 
+            debug=os.environ.get("FLASK_DEBUG") == "1")
