@@ -9,7 +9,6 @@ interface AutocompleteSearchBarProps {
 export default function AutocompleteSearchBar({ onSearch }: AutocompleteSearchBarProps) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   // This useEffect handles fetching suggestions as the user types
   useEffect(() => {
@@ -19,7 +18,6 @@ export default function AutocompleteSearchBar({ onSearch }: AutocompleteSearchBa
       return;
     }
 
-    setIsLoading(true);
 
     // Debounce: Wait 300ms after the user stops typing to fetch
     const debounceTimer = setTimeout(() => {
@@ -29,7 +27,6 @@ export default function AutocompleteSearchBar({ onSearch }: AutocompleteSearchBa
           setSuggestions(data);
         })
         .catch(console.error)
-        .finally(() => setIsLoading(false));
     }, 300);
 
     // Cleanup: Clear the timer if the user types again
