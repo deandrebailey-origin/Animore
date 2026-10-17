@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '../../../lib/mongo';
-
-// Escape regex special characters so user input is matched as plain text
-function escapeRegex(text: string) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+import { getMongoClient } from '../../../lib/mongo';
+import { escapeRegex } from '../../../lib/escapeRegex';
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +11,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'Search query is required' }, { status: 400 });
     }
 
-    const client = await clientPromise;
+    const client = await getMongoClient();
     const collection = client.db('anime').collection('anime_anilist');
 
     const searchRegex = new RegExp(`^${escapeRegex(query)}`, 'i');

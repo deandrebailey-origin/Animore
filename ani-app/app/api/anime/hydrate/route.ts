@@ -2,15 +2,14 @@
 // basically it takes a list of IDs and returns the full anime data for those IDs in one go, which is more efficient than multiple round-trips.
 
 import { NextResponse } from 'next/server';
-import clientPromise from '../../../../lib/mongo'; // <-- IMPORT the helper
-
+import { getMongoClient } from '../../../../lib/mongo';
 
 export async function POST(request: Request) {
   try {
     const { ids } = await request.json();
 
     // 1. Await your pre-existing connection
-    const client = await clientPromise;
+    const client = await getMongoClient();
     const db = client.db('anime');
 
     // 2. Hydrate: Fetch all matches in one single trip to the database
