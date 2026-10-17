@@ -1,5 +1,5 @@
-flask
-flask-cors
-pymongo
-python-dotenv
-gunicorn
+Flask==3.1.3
+flask-cors==6.0.5
+gunicorn==26.2.0
+pymongo==4.19.0
+python-dotenv==1.2.4
