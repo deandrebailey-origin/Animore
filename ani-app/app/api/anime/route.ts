@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '../../../lib/mongo'; // <-- IMPORT the helper
-
+import { getMongoClient } from '../../../lib/mongo';
 export async function GET() {
   try {
     // 1. Get the cached connection
-    const client = await clientPromise;
+    const client = await getMongoClient();
 
     // 2. Use the connection to access your DB and Collection
     const db = client.db('anime');

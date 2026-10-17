@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '../../../lib/mongo';
+import { getMongoClient } from '../../../lib/mongo';
+import { escapeRegex } from '../../../lib/escapeRegex';
 
 export async function GET(request: Request) {
   try {
@@ -12,12 +13,12 @@ export async function GET(request: Request) {
     }
 
     // 2. Connect to the database
-    const client = await clientPromise;
+    const client = await getMongoClient();
     const db = client.db('anime');
     const collection = db.collection('anime_anilist');
 
     // 3. Find the source anime to get its embedding vector
-    const searchRegex = new RegExp(title, 'i');
+    const searchRegex = new RegExp(escapeRegex(title), 'i');
     const sourceAnime = await collection.findOne({ 'title.english': { $regex: searchRegex } });
     
     if (!sourceAnime || !sourceAnime.embedding) {
