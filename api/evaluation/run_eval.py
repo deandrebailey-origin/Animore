@@ -1,12 +1,12 @@
-import pandas as pd
 import argparse
-import random
-import time
+
 import numpy as np
-from build_collab_candidates import compute_neighbors
-from evaluation.metrics import recall_at_k, ndcg_at_k
-from evaluation.split import split_users
+import pandas as pd
+
 from app import reciprocal_rank_fusion
+from build_collab_candidates import compute_neighbors
+from evaluation.metrics import ndcg_at_k, recall_at_k
+from evaluation.split import split_users
 
 LIKED_THRESHOLD = 8
 
@@ -26,10 +26,11 @@ def build_test_cases(test, known_items, like_threshold=8, min_liked=5, seed=42):
 
     liked = test[is_liked & is_known]
 
-    for user_id, group in liked.groupby("user_id"):
+    for _user_id, group in liked.groupby("user_id"):
         liked_ids = group["anime_id"].to_numpy()
 
-        if len(liked_ids) < min_liked: continue
+        if len(liked_ids) < min_liked: 
+            continue
 
         seed_anime = int(rng.choice(liked_ids))
         targets = set(liked_ids.tolist()) - {seed_anime}
