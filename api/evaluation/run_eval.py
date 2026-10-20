@@ -6,6 +6,7 @@ import numpy as np
 from build_collab_candidates import compute_neighbors
 from evaluation.metrics import recall_at_k, ndcg_at_k
 from evaluation.split import split_users
+from app import reciprocal_rank_fusion
 
 LIKED_THRESHOLD = 8
 
@@ -50,6 +51,12 @@ def make_popularity_recommender(train, n=50):
     # the items in top that aren't the seed, first n of them
     return recommend
 
+def make_hybrid_recommender(collab, popular, limit=50):
+    def recommned(seed):
+            return reciprocal_rank_fusion(collab(seed), popular(seed), limit=limit)
+    return recommned
+    
+
 def evaluate(cases, recommend, n_items, ks=(10, 50)):
     scores = {}
     s = set()
@@ -71,6 +78,14 @@ def evaluate(cases, recommend, n_items, ks=(10, 50)):
     results["coverage@10"] = len(s) / n_items
     return results
 
+def center_rating(train):
+    centered = train.copy()
+    centered["rating"] = centered["rating"].astype("float32")
+    users = centered.groupby("user_id")["rating"].transform("mean")
+    centered["rating"] = centered["rating"] - users
+    return centered
+    
+
 def main():
     parser = argparse.ArgumentParser(description="Evaluate Animore recommenders")
     parser.add_argument("--data", default = "rating_complete.csv")
@@ -83,15 +98,21 @@ def main():
     train, test = split_users(df, test_frac=args.test_frac, seed=args.seed)
 
     neighbors = compute_neighbors(train, k=50, min_ratings=5)
+    centered_neighbors = compute_neighbors(center_rating(train), k=50, min_ratings=5)
+
     known_items = set(neighbors.keys())
     cases = build_test_cases(test, known_items, seed=args.seed)
 
+    collab_centered=make_collab_recommender(centered_neighbors)
     collab = make_collab_recommender(neighbors)
     popular = make_popularity_recommender(train)
+    hybrid = make_hybrid_recommender(collab, popular)
+
 
     print("collab: ", evaluate(cases, collab, len(known_items)))
     print("popular:", evaluate(cases, popular, len(known_items)))
-
+    print("collab_centered", evaluate(cases, collab_centered, len(known_items)))
+    print("hybrid", evaluate(cases, hybrid, len(known_items)))
 if __name__ == "__main__":
     main()
 
